@@ -1,30 +1,26 @@
 import { GLView } from 'expo-gl';
 import { Renderer } from 'expo-three';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default function ModelViewer({ modelUrl }) {
-  const timeoutRef = useRef();
-
-  useEffect(() => {
-    return () => clearTimeout(timeoutRef.current);
-  }, []);
+  const rotationRef = useRef(0);       // Góc xoay quanh Y
+  const lastTouchX = useRef(null);     // Lưu touch X trước đó
 
   const onContextCreate = async (gl) => {
     const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
+
     const renderer = new Renderer({ gl });
     renderer.setSize(width, height);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-    camera.position.z = 5;
-    camera.position.y = 1;
+    camera.position.set(0, 1, 5);
 
     const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
 
-    // Load GLB model
     const loader = new GLTFLoader();
     loader.load(
       modelUrl,
@@ -39,7 +35,15 @@ export default function ModelViewer({ modelUrl }) {
     );
 
     const animate = () => {
-      timeoutRef.current = requestAnimationFrame(animate);
+      requestAnimationFrame(animate);
+
+      // Tính toán vị trí camera quay quanh trục Y
+      const radius = 5;
+      const angle = rotationRef.current;
+      camera.position.x = Math.sin(angle) * radius;
+      camera.position.z = Math.cos(angle) * radius;
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+
       renderer.render(scene, camera);
       gl.endFrameEXP();
     };
@@ -49,6 +53,18 @@ export default function ModelViewer({ modelUrl }) {
     <GLView
       style={{ flex: 1 }}
       onContextCreate={onContextCreate}
+      onStartShouldSetResponder={() => true}
+      onResponderMove={(e) => {
+        const touchX = e.nativeEvent.locationX;
+        if (lastTouchX.current !== null) {
+          const deltaX = touchX - lastTouchX.current;
+          rotationRef.current += deltaX * 0.005; // Tăng góc xoay
+        }
+        lastTouchX.current = touchX;
+      }}
+      onResponderRelease={() => {
+        lastTouchX.current = null;
+      }}
     />
   );
 }

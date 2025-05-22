@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.test.gen3d"
     },
     "web": {
       "bundler": "metro",
@@ -39,7 +40,13 @@
     "experiments": {
       "typedRoutes": true
     },
-    "sdkVersion": "53.0.0"
+    "sdkVersion": "53.0.0",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e60a8a06-0062-4493-8003-2a02ac3d2629"
+      }
+    }
   },
   "name": "generate_3d"
 }
