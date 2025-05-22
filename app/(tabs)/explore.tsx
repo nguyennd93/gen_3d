@@ -3,7 +3,7 @@ import { StyleSheet, View, Text, Button, Alert, TextInput } from 'react-native';
 import ModelViewer from '../../components/ModelViewer';
 import * as FileSystem from 'expo-file-system';
 
-const TRIPO_API_KEY = 'tsk_t0QMQmzhD_23N5uDjCukHwrWTVu4srL85poatSoLZ5s';
+const TRIPO_API_KEY = 'tsk_2yp8CO1sAV54yEaiB3YYLKiY0hSUH63J4uIkdxPqTuA';
 
 async function generateGlbFromTripo(token: string, onProgress?: (percent: number) => void): Promise<string | null> {
   try {
@@ -38,7 +38,7 @@ async function generateGlbFromTripo(token: string, onProgress?: (percent: number
     const taskId = result.data?.task_id;
     console.log('Task ID: ', taskId);
 
-    // Step 2: Poll for result
+    // Step 2: Polling for result
     const maxWait = 120000;
     const pollInterval = 5000;
     let waited = 0;
@@ -82,20 +82,20 @@ export default function TabTwoScreen() {
   const [glbUrl, setGlbUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState<number>(0);
-  const [imageUrl, setImageUrl] = useState<string>('https://i.ibb.co/8nByPGX7/test-png.png'); // 🆕
+  const [imageUrl, setImageUrl] = useState<string>('https://i.ibb.co/YFxKC6SC/batroom.png'); // 🆕 Default image URL
 
   const uploadFromImageUrl = async (imageUrl: string): Promise<string | null> => {
     try {
       if (!imageUrl) {
-        Alert.alert('❌ Vui lòng nhập URL ảnh');
+        Alert.alert('❌ Please enter image URL');
         return null;
       }
 
-      // Bước 2: Tải ảnh về local cache
+      // Step 2: Download image to local cache
       const filename = 'downloaded.png';
       const localPath = FileSystem.cacheDirectory + filename;
 
-      // Bước 3: Upload từ file local
+      // Step 3: Upload from local file
       console.log("Image URI: ", imageUrl);
       const downloadRes = await FileSystem.downloadAsync(imageUrl, localPath);
 
@@ -118,16 +118,16 @@ export default function TabTwoScreen() {
       const json = await uploadRes.json();
 
       if (!uploadRes.ok) {
-        console.error('❌ Upload thất bại:', json);
-        Alert.alert('❌ Upload lỗi', JSON.stringify(json));
+        console.error('❌ Upload failed:', json);
+        Alert.alert('❌ Upload Error', JSON.stringify(json));
         return null;
       }
 
-      console.log('✅ Upload thành công:', json);
+      console.log('✅ Upload successful:', json);
       return json.data?.image_token;
     } catch (err) {
-      console.error('🔥 Lỗi upload:', err);
-      Alert.alert('❌ Lỗi khi upload ảnh', String(err));
+      console.error('🔥 Upload error:', err);
+      Alert.alert('❌ Error uploading image', String(err));
       return null;
     }
   };
@@ -141,28 +141,28 @@ export default function TabTwoScreen() {
       setGlbUrl(url);
     }
     setLoading(false);
-    // setGlbUrl('https://tripo-data.rg1.data.tripo3d.com/tcli_18bc76404eea44e8b2ff1ea8909106d1/20250522/45cd5f4c-842f-4144-bc0d-ad4f7e5ea952/tripo_pbr_model_45cd5f4c-842f-4144-bc0d-ad4f7e5ea952.glb?Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly90cmlwby1kYXRhLnJnMS5kYXRhLnRyaXBvM2QuY29tL3RjbGlfMThiYzc2NDA0ZWVhNDRlOGIyZmYxZWE4OTA5MTA2ZDEvMjAyNTA1MjIvNDVjZDVmNGMtODQyZi00MTQ0LWJjMGQtYWQ0ZjdlNWVhOTUyL3RyaXBvX3Bicl9tb2RlbF80NWNkNWY0Yy04NDJmLTQxNDQtYmMwZC1hZDRmN2U1ZWE5NTIuZ2xiIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJBV1M6RXBvY2hUaW1lIjoxNzQ3OTU4NDAwfX19XX0_&Signature=srzHw-o8d092Y0C965~vq5E4iMEv9QwJL7HLTh9N~vGVv7yCJEco3XEOBnBwG-ffn5mcZzSsB0IvxEEoGCm0FXhrGaZQ1P8fw9Dpn4JiUUBe~pgfBvtaMmPI0ZUo40u9EJjZhW6gmUHwrdvLoPjqnQnEsRKXUuiAL7QX3Uz4OcKWuk6wfsdQ-jVuhlWyOAK3AyAwYVLd8eW3FoPjyStnvh-Kt0xadpJzwY5D9bk9cg4KyfEeFg410o8oLDCxb37WFKj449nN-yWOYMsjZHLWg~smE4IcAN6lhBGpIXqfNSoxZxOpTzzJx47dQz-qgBjGN1csbmclGQSlCkOycy4cJA__&Key-Pair-Id=K1676C64NMVM2J');
+    // setGlbUrl('...'); // Optional hardcoded URL for testing
   };
 
   return (
     <View style={styles.container}>
       {loading && (
         <View style={styles.overlay}>
-          <Text style={styles.progressText}>{`Đang tạo model: ${progress}%`}</Text>
+          <Text style={styles.progressText}>{`Generating model: ${progress}%`}</Text>
         </View>
       )}
 
       {glbUrl && <ModelViewer modelUrl={glbUrl} />}
 
-      {/* 🆕 Nhập URL ảnh và nút upload */}
+      {/* 🆕 Image URL input and upload button */}
       <View style={styles.bottomPanel}>
         <TextInput
           style={styles.input}
-          placeholder="Nhập URL ảnh PNG"
+          placeholder="Enter PNG image URL"
           value={imageUrl}
           onChangeText={setImageUrl}
         />
-        <Button title="Upload ảnh từ URL" onPress={handleGenerateModel} />
+        <Button title="Upload image from URL" onPress={handleGenerateModel} />
       </View>
     </View>
   );
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
   },
   bottomPanel: {
     padding: 10,

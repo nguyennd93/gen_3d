@@ -5,8 +5,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
 export default function ModelViewer({ modelUrl }) {
-  const rotationRef = useRef(0);       // Góc xoay quanh Y
-  const lastTouchX = useRef(null);     // Lưu touch X trước đó
+  const rotationRef = useRef(0);       // Rotation angle around Y-axis
+  const lastTouchX = useRef(null);     // Store previous touch X position
 
   const onContextCreate = async (gl) => {
     const { drawingBufferWidth: width, drawingBufferHeight: height } = gl;
@@ -37,7 +37,7 @@ export default function ModelViewer({ modelUrl }) {
     const animate = () => {
       requestAnimationFrame(animate);
 
-      // Tính toán vị trí camera quay quanh trục Y
+      // Calculate camera position rotating around Y-axis
       const radius = 5;
       const angle = rotationRef.current;
       camera.position.x = Math.sin(angle) * radius;
@@ -58,7 +58,7 @@ export default function ModelViewer({ modelUrl }) {
         const touchX = e.nativeEvent.locationX;
         if (lastTouchX.current !== null) {
           const deltaX = touchX - lastTouchX.current;
-          rotationRef.current += deltaX * 0.005; // Tăng góc xoay
+          rotationRef.current += deltaX * 0.005; // Increase rotation angle
         }
         lastTouchX.current = touchX;
       }}
